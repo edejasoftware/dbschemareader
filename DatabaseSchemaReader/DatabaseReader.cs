@@ -372,6 +372,8 @@ namespace DatabaseSchemaReader
             }
 
             UpdateReferences();
+            if (DatabaseSchema.DataTypes.Count > 0)
+                DatabaseSchemaFixer.UpdateDataTypes(DatabaseSchema);
 
             return DatabaseSchema.StoredProcedures;
         }

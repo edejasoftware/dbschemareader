@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.Linq;
+
 using DatabaseSchemaReader.DataSchema;
 
 namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
@@ -70,14 +72,14 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
 
         protected override void Mapper(IDataRecord record)
         {
-            var allArgs = ReadLongArray(record["ALLARGS"]);
+            var allArgs = ReadIntToLongArray(record["ALLARGS"]);
             if (allArgs.Length == 0)
             {
                 //there may be just inputparameters
-                var s = ReadString(record["INARGS"]);
+                var s = ReadIntArray(record["INARGS"]);
                 //inargs is space delimited.
-                if (!string.IsNullOrEmpty(s)) s = s.Replace(' ', ',');
-                allArgs = StringToLongArray(s);
+                //if (!string.IsNullOrEmpty(s)) s = s.Replace(' ', ',');
+                allArgs = s.Select(x => long.Parse(x)).ToArray(); //StringToLongArray(s);
             }
             //there are no arguments for this procedure
             if (allArgs.Length == 0) return;
@@ -155,6 +157,14 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
             return new long[] { };
         }
 
+        private static long[] ReadIntToLongArray(object o)
+        {
+            var ar = o as int[];
+            if (ar != null) return ar.Select(x => (long)x).ToArray();
+            if (o is long) return new[] { (long)o };
+            return new long[] { };
+        }
+
         private static long[] StringToLongArray(string s)
         {
             if (string.IsNullOrEmpty(s)) return new long[] { };
@@ -177,8 +187,21 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
 
         private static string[] ReadArray(object o)
         {
+            var chArray = o as char[];
+            if (chArray != null) return chArray.Select(x => x.ToString()).ToArray();
+
             var ar = o as string[];
             if (ar != null) return ar;
+            var s = ReadString(o);
+            if (s == null) return new string[] { };
+            s = s.Trim(new[] { '{', '}' });
+            return s.Split(',');
+        }
+
+        private static string[] ReadIntArray(object o)
+        {
+            var ar = o as int[];
+            if (ar != null) return ar.Select(x => x.ToString()).ToArray();
             var s = ReadString(o);
             if (s == null) return new string[] { };
             s = s.Trim(new[] { '{', '}' });
