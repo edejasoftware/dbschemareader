@@ -132,6 +132,8 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
                     return "INOUT";
                 case "o":
                     return "OUT";
+                case "t":
+                    return "TABLE";
                 default:
                     return "IN";
             }
@@ -211,6 +213,15 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
         private static string ReadString(object o)
         {
             return o == DBNull.Value ? null : o.ToString();
+        }
+
+        private static bool ReadBoolean(object o)
+        {
+            if (o == DBNull.Value)
+            {
+                return false;
+            }
+            return bool.Parse(o.ToString());
         }
     }
 }

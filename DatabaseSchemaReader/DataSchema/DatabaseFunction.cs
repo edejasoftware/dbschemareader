@@ -12,6 +12,7 @@ namespace DatabaseSchemaReader.DataSchema
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string _returnType;
 
+        private bool _returnSet;
         /// <summary>
         /// Gets or sets the return type. Will be null for table-valued functions.
         /// </summary>
@@ -26,6 +27,15 @@ namespace DatabaseSchemaReader.DataSchema
                 return _returnType;
             }
             set { _returnType = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets weather function returns set
+        /// </summary>
+        public bool ReturnSet
+        {
+            get { return _returnSet; }
+            set { _returnSet = value; }
         }
 
         /// <summary>

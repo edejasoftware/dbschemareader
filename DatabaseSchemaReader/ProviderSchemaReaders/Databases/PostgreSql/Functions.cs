@@ -17,7 +17,8 @@ ns.nspname AS SCHEMA,
 pr.proname AS NAME, 
 tp.typname AS RETURNTYPE, 
 lng.lanname AS LANGUAGE,
-pr.prosrc AS BODY
+pr.prosrc AS BODY,
+pr.proretset as RETSET
   FROM pg_proc pr
 LEFT OUTER JOIN pg_type tp ON tp.oid = pr.prorettype
 INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
@@ -60,7 +61,8 @@ INNER JOIN pg_language lng ON lng.oid = pr.prolang
                 Name = name,
                 Sql = sql,
                 Language = record.GetString("LANGUAGE"),
-                ReturnType = record.GetString("RETURNTYPE")
+                ReturnType = record.GetString("RETURNTYPE"),
+                ReturnSet = record.GetBoolean("RETSET")
             };
             Result.Add(sproc);
         }
