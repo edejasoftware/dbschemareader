@@ -99,6 +99,12 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Adapters
             return new Users().Execute(DbConnection);
         }
 
+        public override IList<DatabaseColumn> ViewColumns(string viewName)
+        {
+            return new Columns(Owner, viewName)
+                .Execute(DbConnection);
+        }
+
         public override void PostProcessing(DatabaseTable databaseTable)
         {
             if (databaseTable == null) return;
