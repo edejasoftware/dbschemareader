@@ -19,6 +19,7 @@ table_name
 FROM information_schema.tables 
 WHERE (table_schema = :OWNER OR :OWNER IS NULL)
 AND (table_name = :TABLENAME OR :TABLENAME IS NULL)
+AND (table_type LIKE 'BASE_TABLE')
 ORDER BY table_schema, table_name";
         }
 
